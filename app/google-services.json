@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "282191266640",
+    "firebase_url": "https://szakdolgozat-bee81.firebaseio.com",
+    "project_id": "szakdolgozat-bee81",
+    "storage_bucket": "szakdolgozat-bee81.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:282191266640:android:01c1f04ee67f81229fe255",
+        "android_client_info": {
+          "package_name": "com.example.szakdolgozat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "282191266640-chhpsv94932lo4nro8otmdf882qhcm6d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.szakdolgozat",
+            "certificate_hash": "0b37adffbdb0376aa6cd82368f9f4188773b32ed"
+          }
+        },
+        {
+          "client_id": "282191266640-2v6bnbev3hgkdi5qfjlg8ljglavca10b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChRJ4dEoI9mBfyW4mbfHvqVNlLop64Dis"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "282191266640-2v6bnbev3hgkdi5qfjlg8ljglavca10b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

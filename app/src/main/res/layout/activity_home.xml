@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".HomeActivity">
+
+    <ScrollView
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/home_main_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="MyList"
+                android:textAlignment="center"
+                android:textSize="80sp"
+                android:textStyle="bold|italic"
+                android:textColor="@color/colorPrimaryDark"
+                />
+
+            <ImageButton
+                android:id="@+id/home_mylist_ibtn"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_below="@+id/home_main_text"
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="30dp"
+                android:background="@drawable/list"
+                />
+
+            <ImageButton
+                android:id="@+id/home_priv_chat_ibtn"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_below="@+id/home_main_text"
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="235dp"
+                android:background="@drawable/chatbubble"
+                />
+
+            <ImageButton
+                android:id="@+id/home_group_chat_ibtn"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_below="@+id/home_priv_chat_ibtn"
+                android:layout_marginTop="55dp"
+                android:layout_marginLeft="235dp"
+                android:background="@drawable/groupchat"
+                />
+
+            <ImageButton
+                android:id="@+id/home_other_ibtn"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_below="@+id/home_mylist_ibtn"
+                android:layout_marginTop="55dp"
+                android:layout_marginLeft="30dp"
+                android:background="@drawable/list"
+                />
+
+            <TextView
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/home_mylist_ibtn"
+                android:text="Listáim"
+                android:layout_marginLeft="30dp"
+                android:textSize="20sp"
+                android:textAlignment="center"
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimaryDark"
+                />
+
+            <TextView
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/home_priv_chat_ibtn"
+                android:text="Privát beszélgetések"
+                android:layout_marginLeft="235dp"
+                android:textSize="20sp"
+                android:textAlignment="center"
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimaryDark"
+                />
+
+            <TextView
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/home_other_ibtn"
+                android:text="Mások listái"
+                android:layout_marginLeft="30dp"
+                android:textSize="20sp"
+                android:textAlignment="center"
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimaryDark"
+                />
+            <TextView
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/home_group_chat_ibtn"
+                android:text="Csoportos beszélgetés"
+                android:layout_marginLeft="235dp"
+                android:textSize="20sp"
+                android:textAlignment="center"
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimaryDark"
+                />
+
+            <ImageButton
+                android:id="@+id/home_shared_list_ibtn"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_below="@+id/home_other_ibtn"
+                android:layout_marginTop="55dp"
+                android:layout_marginLeft="30dp"
+                android:background="@drawable/list"
+                />
+            <TextView
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/home_shared_list_ibtn"
+                android:text="Megosztott listáim"
+                android:layout_marginLeft="30dp"
+                android:textSize="20sp"
+                android:textAlignment="center"
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimaryDark"
+                />
+
+            <ImageButton
+                android:id="@+id/home_profile_ibtn"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_below="@+id/home_group_chat_ibtn"
+                android:layout_marginTop="63dp"
+                android:layout_marginLeft="235dp"
+                android:background="@drawable/profile"
+                />
+            <TextView
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/home_profile_ibtn"
+                android:text="Profilom"
+                android:layout_marginLeft="235dp"
+                android:textSize="20sp"
+                android:textAlignment="center"
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimaryDark"
+                />
+
+            <ImageButton
+                android:id="@+id/home_logout_ibtn"
+                android:layout_width="140dp"
+                android:layout_height="150dp"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/home_profile_ibtn"
+                android:layout_marginTop="65dp"
+                android:layout_marginLeft="240dp"
+                android:background="@drawable/logout"
+                />
+
+            <TextView
+                android:layout_width="140dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/home_logout_ibtn"
+                android:text="Kijelentkezés"
+                android:layout_centerHorizontal="true"
+                android:textSize="20sp"
+                android:textAlignment="center"
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimaryDark"
+                />
+            </RelativeLayout>
+    </ScrollView>
+</RelativeLayout>
+
