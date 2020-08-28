@@ -72,8 +72,6 @@ public class OtherListsActivity extends AppCompatActivity {
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 for (DataSnapshot datas : snapshot.getChildren()) {
                                     if (datas.child("listID").getValue().equals(listDetails.getID())) {
-                                        Log.i("FASZ",listDetails.getID());
-                                        Log.i("uid", CurrentUsers.currentOnlineUser.getEmail());
                                         arrayList.add(listDetails);
                                     }
                                 }
@@ -86,7 +84,6 @@ public class OtherListsActivity extends AppCompatActivity {
                         });
                     }
                 }
-                Log.i("FASZ","kutyafej");
                 listView.setAdapter(arrayAdapter);
             }
 
