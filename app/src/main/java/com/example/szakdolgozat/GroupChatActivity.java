@@ -6,8 +6,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.provider.DocumentsContract;
+import android.renderscript.Sampler;
 import android.text.InputType;
 import android.view.View;
 import android.view.ViewGroupOverlay;
@@ -16,6 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.szakdolgozat.CurrentOnline.CurrentUsers;
 import com.google.firebase.database.DataSnapshot;
@@ -27,6 +30,7 @@ import com.google.firebase.database.ValueEventListener;
 import org.w3c.dom.Text;
 
 import java.lang.reflect.Array;
+import java.nio.file.attribute.GroupPrincipal;
 import java.security.acl.Group;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -83,10 +87,38 @@ public class GroupChatActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                ChatRoomDetails roomDetails = (ChatRoomDetails) adapterView.getItemAtPosition(i);
-                Intent intent = new Intent(GroupChatActivity.this, ChatViewActivity.class);
-                intent.putExtra("roomDetails", roomDetails);
-                startActivity(intent);
+                final ChatRoomDetails roomDetails = (ChatRoomDetails) adapterView.getItemAtPosition(i);
+                AlertDialog.Builder builder = new AlertDialog.Builder(GroupChatActivity.this);
+                builder.setTitle("Adja meg a jelszót!");
+                final EditText input = new EditText(GroupChatActivity.this);
+                input.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                builder.setView(input);
+
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String inputText3;
+                        inputText3 = input.getText().toString();
+                        if(roomDetails.getRoomPass().equals(inputText3))
+                        {
+                            Intent intent = new Intent(GroupChatActivity.this, ChatViewActivity.class);
+                            intent.putExtra("roomDetails", roomDetails);
+                            startActivity(intent);
+                        }
+                        else{
+                            Toast.makeText(GroupChatActivity.this, "Helytelen jelszó", Toast.LENGTH_SHORT).show();
+                            dialogInterface.dismiss();
+                        }
+                    }
+                });
+                builder.setNegativeButton("Mégsem", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Toast.makeText(GroupChatActivity.this, "Jelszó megadás megszakítva", Toast.LENGTH_SHORT).show();
+                        dialogInterface.dismiss();
+                    }
+                });
+                builder.show();
             }
         });
     }
