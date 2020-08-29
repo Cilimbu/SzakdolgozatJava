@@ -16,6 +16,11 @@ public class ChatRoomDetails implements Serializable {
 
     }
 
+    @Override
+    public String toString() {
+        return String.format(roomname +" "+ creator);
+    }
+
     public String getRoomPass() {
         return roomPass;
     }

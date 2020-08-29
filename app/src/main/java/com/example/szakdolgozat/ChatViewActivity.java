@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.text.Html;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -101,7 +102,18 @@ public class ChatViewActivity extends AppCompatActivity {
             chat_message = (String) ((DataSnapshot)i.next()).getValue();
             sender = (String) (((DataSnapshot) i.next()).getValue());
 
-            chat_conversation.append(sender + ": " + chat_message + "\n");
+            //chat_message = Html.fromHtml("<font color='#EE0000'>"+chat_message+"</font>").toString();
+
+            //chat_conversation.append(sender + ": " + chat_message + "\n");
+
+            if(sender.equals(CurrentUsers.currentOnlineUser.getEmail()))
+            {
+                chat_conversation.append(Html.fromHtml("<font color='blue'>".concat(sender+ ": ").concat("</font>").concat(chat_message).concat("<br>")));
+            }
+            else {
+                chat_conversation.append(Html.fromHtml("<font color='green'>".concat(sender+": ").concat("</font>").concat(chat_message).concat("<br>")));
+                }
+
         }
     }
 }
