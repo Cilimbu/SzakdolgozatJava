@@ -39,7 +39,7 @@ public class HomeActivity extends AppCompatActivity {
         privateChatBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(HomeActivity.this, RegisterActivity.class);
+                Intent intent = new Intent(HomeActivity.this, PrivateChatActivity.class);
                 startActivity(intent);
             }
         });

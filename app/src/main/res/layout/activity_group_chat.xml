@@ -16,17 +16,44 @@
         android:textSize="35sp"
         android:textAlignment="center"
         />
-    <Button
-        android:id="@+id/add_room_button"
+
+
+    <LinearLayout
+
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@drawable/buttons"
-        android:layout_alignParentBottom="true"
-        android:layout_marginRight="15dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginBottom="15dp"
-        android:text="Chat szoba hozzáadás">
-    </Button>
+        android:layout_alignParentBottom="true">
+        <LinearLayout
+
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_gravity="end"
+            android:weightSum="2">
+            <Button
+                android:id="@+id/add_room_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Új szoba hozzáadása"
+                android:background="@drawable/buttons"
+                android:layout_weight="1"
+                android:layout_marginRight="50dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="15dp"
+                android:textAlignment="center"/>
+
+            <Button
+                android:id="@+id/delete_room_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/buttons"
+                android:text="Chat szobák törlése"
+                android:layout_marginRight="15dp"
+                android:layout_weight="1"
+                android:textAlignment="center"/>
+        </LinearLayout>
+    </LinearLayout>
     <ListView
         android:id="@+id/chatroom_listview"
         android:layout_width="match_parent"

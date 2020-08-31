@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.provider.DocumentsContract;
 import android.renderscript.Sampler;
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroupOverlay;
 import android.widget.AdapterView;
@@ -34,29 +35,77 @@ import java.nio.file.attribute.GroupPrincipal;
 import java.security.acl.Group;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class GroupChatActivity extends AppCompatActivity {
 
-    private Button addRoomButton;
+    private Button addRoomButton, delRoomButton;
     private ListView listView;
     private ArrayAdapter<String> arrayAdapter;
     private ArrayList<String> listofRooms = new ArrayList<String>();
     private DatabaseReference RootRef = FirebaseDatabase.getInstance().getReference();
     private String inputText="";
     private String inputText2="";
+    public ArrayList<ChatRoomDetails> ListObj;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_chat);
 
+        delRoomButton = (Button) findViewById(R.id.delete_room_button);
         addRoomButton = (Button) findViewById(R.id.add_room_button);
         listView = (ListView) findViewById(R.id.chatroom_listview);
 
         arrayAdapter = new ArrayAdapter<String>(this,R.layout.list_items, listofRooms);
-        listView.setAdapter(arrayAdapter);
+        ListObj = new ArrayList<ChatRoomDetails>();
+
         RefreshList();
+
+        delRoomButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String[] names = new String[ListObj.size()];
+                for(int i=0 ; i< ListObj.size();i++)
+                {
+                    if("c".equals(CurrentUsers.currentOnlineUser.getEmail()))
+                    {
+                        names[i] = ListObj.get(i).getCreator();
+                    }
+                }
+                final ArrayList<Integer> selectedItems = new ArrayList<Integer>();
+                AlertDialog.Builder builder = new AlertDialog.Builder(GroupChatActivity.this);
+                builder.setTitle("Válassza ki mely elemeket szeretné törölni").setMultiChoiceItems(names, null, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i, boolean b) {
+                        if (b) {
+                            selectedItems.add(i);
+                        } else if (selectedItems.contains(i)) {
+                            selectedItems.remove(Integer.valueOf(i));
+                        }
+                    }
+                });
+                builder.setPositiveButton("Törlés", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        for (Integer p : selectedItems) {
+                            Delete(ListObj.get(p).getID());
+                        }
+                        Toast.makeText(GroupChatActivity.this, "Sikeres törlés", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                builder.setNegativeButton("Mégse", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Toast.makeText(GroupChatActivity.this, "Törlés megszakítva", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                builder.show();
+            }
+        });
+
         addRoomButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -86,7 +135,6 @@ public class GroupChatActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
                 final ChatRoomDetails roomDetails = (ChatRoomDetails) adapterView.getItemAtPosition(i);
                 AlertDialog.Builder builder = new AlertDialog.Builder(GroupChatActivity.this);
                 builder.setTitle("Adja meg a jelszót!");
@@ -141,6 +189,7 @@ public class GroupChatActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 arrayList.clear();
+                ListObj.clear();
                 for(DataSnapshot ds : snapshot.getChildren())
                 {
                     ChatRoomDetails temp = new ChatRoomDetails();
@@ -154,15 +203,21 @@ public class GroupChatActivity extends AppCompatActivity {
                     temp.setRoomPass(roompass);
                     arrayList.add(temp);
                 }
+                ListObj = arrayList;
                 listView.setAdapter(arrayAdapter);
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Toast.makeText(GroupChatActivity.this, "Valami hiba lépett fel, próbálja meg később", Toast.LENGTH_SHORT).show();
             }
         });
     }
-
+    public void Delete(String ID)
+    {
+        final DatabaseReference RootRef;
+        RootRef = FirebaseDatabase.getInstance().getReference();
+        RootRef.child("PrivateChat").child(ID).removeValue();
+    }
     public void GivePasswordForRoom(final String inputText)
     {
         final EditText input2 = new EditText(GroupChatActivity.this);

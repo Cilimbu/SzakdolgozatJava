@@ -6,6 +6,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.Html;
@@ -25,30 +32,31 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class ChatViewActivity extends AppCompatActivity {
+public class PrivateChatViewActivity extends AppCompatActivity {
 
     private Button sendMessageButton;
     private EditText input_message;
-    private TextView chat_conversation,roomname;
-    String username, ID, email;
-    private ChatRoomDetails roomDetails;
-    DatabaseReference rootRef;
-    String chat_message, sender;
+    private TextView chat_conversation, roomname;
+    private PrivateChatDetails privateChatDetails;
+    private DatabaseReference rootRef;
+    private String chat_message,sender;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat_view);
+        setContentView(R.layout.activity_private_chat_view);
+        privateChatDetails = (PrivateChatDetails)getIntent().getSerializableExtra("privateChatDetails");
+
         sendMessageButton = (Button) findViewById(R.id.send_message_button);
         input_message = (EditText) findViewById(R.id.message_edittext);
         chat_conversation = (TextView) findViewById(R.id.viewmessages_textview);
         roomname = (TextView) findViewById(R.id.roomname_textview);
+        roomname.setText(privateChatDetails.toString());
 
-        roomDetails = (ChatRoomDetails)getIntent().getSerializableExtra("roomDetails");
-        roomname.setText(roomDetails.getRoomname());
-        chat_message = input_message.getText().toString();
-        sender=CurrentUsers.currentOnlineUser.getEmail();
-        rootRef = FirebaseDatabase.getInstance().getReference().child("Chatrooms").child(roomDetails.getID()).child("Messages");
+
+        rootRef = FirebaseDatabase.getInstance().getReference().child("PrivateChat").child(privateChatDetails.getRoomID()).child("Messages");
 
         sendMessageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,8 +72,6 @@ public class ChatViewActivity extends AppCompatActivity {
                 message_root.updateChildren(map2);
 
                 input_message.getText().clear();
-
-
             }
         });
         rootRef.addChildEventListener(new ChildEventListener() {
@@ -95,8 +101,6 @@ public class ChatViewActivity extends AppCompatActivity {
             }
         });
     }
-
-
     private void append_chat(DataSnapshot snapshot)
     {
         Iterator i = snapshot.getChildren().iterator();
@@ -106,29 +110,14 @@ public class ChatViewActivity extends AppCompatActivity {
             chat_message = (String) ((DataSnapshot)i.next()).getValue();
             sender = (String) (((DataSnapshot) i.next()).getValue());
 
-            //chat_message = Html.fromHtml("<font color='#EE0000'>"+chat_message+"</font>").toString();
-
-            //chat_conversation.append(sender + ": " + chat_message + "\n");
-
             if(sender.equals(CurrentUsers.currentOnlineUser.getEmail()))
             {
                 chat_conversation.append(Html.fromHtml("<font color='blue'>".concat(sender+ ": ").concat("</font>").concat(chat_message).concat("<br>")));
             }
             else {
                 chat_conversation.append(Html.fromHtml("<font color='green'>".concat(sender+": ").concat("</font>").concat(chat_message).concat("<br>")));
-                }
+            }
+
         }
-    }
-
-    private void addNotification()
-    {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.cart)
-                .setContentTitle("Üzeneted érkezett!")
-                .setContentText(sender + " Üzent neked")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
-        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
-        notificationManagerCompat.notify(1, builder.build());
     }
 }
