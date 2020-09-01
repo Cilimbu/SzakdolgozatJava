@@ -49,6 +49,7 @@ public class GroupChatActivity extends AppCompatActivity {
     private String inputText="";
     private String inputText2="";
     private ArrayList<ChatRoomDetails> ListObj;
+    private ArrayList<DelObj> delObjs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,14 +70,20 @@ public class GroupChatActivity extends AppCompatActivity {
             public void onClick(View view) {
                 ArrayList<String> namesList = new ArrayList<String>();
                 String currentUser = CurrentUsers.currentOnlineUser.getEmail();
+                delObjs = new ArrayList<DelObj>();
+                ;
 
                 for(int i=0 ; i< ListObj.size();i++)
                 {
-                    String name = ListObj.get(i).getCreator();
+                    DelObj temp = new DelObj();
+                    String name = ListObj.get(i).getRoomname();
+                    String ID = ListObj.get(i).getID();
 
-                    if(name.equals(currentUser))
+                    if(ListObj.get(i).getCreator().equals(currentUser))
                     {
+                        temp.setID(ID);
                         namesList.add(name);
+                        delObjs.add(temp);
                     }
                 }
                 String[] names = new String[namesList.size()];
@@ -97,7 +104,7 @@ public class GroupChatActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         for (Integer p : selectedItems) {
-                            Delete(ListObj.get(p).getID());
+                            Delete(delObjs.get(p).getID());
                         }
                         Toast.makeText(GroupChatActivity.this, "Sikeres törlés", Toast.LENGTH_SHORT).show();
                     }
@@ -222,7 +229,7 @@ public class GroupChatActivity extends AppCompatActivity {
     {
         final DatabaseReference RootRef;
         RootRef = FirebaseDatabase.getInstance().getReference();
-        RootRef.child("PrivateChat").child(ID).removeValue();
+        RootRef.child("Chatrooms").child(ID).removeValue();
     }
     public void GivePasswordForRoom(final String inputText)
     {

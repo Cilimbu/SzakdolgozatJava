@@ -85,7 +85,7 @@ public class OtherListsActivity extends AppCompatActivity {
                         });
                     }
                 }
-                
+
             }
 
             @Override
