@@ -16,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.Html;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,6 +28,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -40,8 +42,6 @@ public class PrivateChatViewActivity extends AppCompatActivity {
     private PrivateChatDetails privateChatDetails;
     private DatabaseReference rootRef;
     private String chat_message,sender;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +70,8 @@ public class PrivateChatViewActivity extends AppCompatActivity {
                 map2.put("sender", CurrentUsers.currentOnlineUser.getEmail());
                 map2.put("message", input_message.getText().toString());
                 message_root.updateChildren(map2);
+
+                sendNotification(sender,chat_message);
 
                 input_message.getText().clear();
             }
@@ -119,5 +121,32 @@ public class PrivateChatViewActivity extends AppCompatActivity {
             }
 
         }
+    }
+    private void sendNotification(final String message, final String sender)
+    {
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        String email;
+        if(privateChatDetails.getpartner().equals(CurrentUsers.currentOnlineUser.getEmail()))
+        {
+            email = privateChatDetails.getcreator();
+        }
+        else{
+            email = privateChatDetails.getpartner();
+        }
+        rootRef.child("Users").orderByChild("email").equalTo(email).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for(DataSnapshot ds : snapshot.getChildren())
+                {
+                    String token = ds.child("token").getValue(String.class);
+                    NotificationHelper.sendNotification(PrivateChatViewActivity.this, token, sender, message);
+                    Log.i("asd", token);
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 }

@@ -106,9 +106,7 @@ public class ChatViewActivity extends AppCompatActivity {
             chat_message = (String) ((DataSnapshot)i.next()).getValue();
             sender = (String) (((DataSnapshot) i.next()).getValue());
 
-            //chat_message = Html.fromHtml("<font color='#EE0000'>"+chat_message+"</font>").toString();
 
-            //chat_conversation.append(sender + ": " + chat_message + "\n");
 
             if(sender.equals(CurrentUsers.currentOnlineUser.getEmail()))
             {
@@ -118,17 +116,5 @@ public class ChatViewActivity extends AppCompatActivity {
                 chat_conversation.append(Html.fromHtml("<font color='green'>".concat(sender+": ").concat("</font>").concat(chat_message).concat("<br>")));
                 }
         }
-    }
-
-    private void addNotification()
-    {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.cart)
-                .setContentTitle("Üzeneted érkezett!")
-                .setContentText(sender + " Üzent neked")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
-        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
-        notificationManagerCompat.notify(1, builder.build());
     }
 }

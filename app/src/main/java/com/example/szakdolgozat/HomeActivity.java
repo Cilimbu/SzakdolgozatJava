@@ -10,12 +10,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import io.paperdb.Paper;
 
 public class HomeActivity extends AppCompatActivity {
 
     private ImageButton myListBtn, privateChatBtn, groupChatBtn, sharedListBtn, logOutBtn, otherListBtn, profileBtn;
-
+    private FirebaseAuth firebaseAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,6 +30,7 @@ public class HomeActivity extends AppCompatActivity {
         logOutBtn = (ImageButton) findViewById(R.id.home_logout_ibtn);
         otherListBtn = (ImageButton) findViewById(R.id.home_other_ibtn);
         profileBtn = (ImageButton) findViewById(R.id.home_profile_ibtn);
+        firebaseAuth = FirebaseAuth.getInstance();
 
         myListBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,6 +64,7 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Paper.book().destroy();
+                firebaseAuth.signOut();
                 Intent intent = new Intent(HomeActivity.this, MainActivity.class);
                 startActivity(intent);
             }

@@ -17,6 +17,10 @@ import android.widget.Toast;
 
 import com.example.szakdolgozat.CurrentOnline.CurrentUsers;
 import com.example.szakdolgozat.Model.Users;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,6 +35,7 @@ public class loginActivity extends AppCompatActivity {
     private Button LoginButton;
     private ProgressDialog loadingBar;
     private CheckBox ckBoxRememberMe;
+    private FirebaseAuth firebaseAuth;
 
 
     @Override
@@ -43,6 +48,7 @@ public class loginActivity extends AppCompatActivity {
         InputEmail = (EditText) findViewById(R.id.login_email_input);
         loadingBar = new ProgressDialog(this);
         ckBoxRememberMe = (CheckBox)findViewById(R.id.remember_me);
+        firebaseAuth = FirebaseAuth.getInstance();
 
         LoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,10 +98,19 @@ public class loginActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     String temp = email.replace(".",  ",");
-                    DataSnapshot mail = snapshot.child("Users").child(temp);
+                    final DataSnapshot mail = snapshot.child("Users").child(temp);
                     if(mail.exists())
                     {
-                        Users user = mail.getValue(Users.class);
+                        firebaseAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                Users user = mail.getValue(Users.class);
+                                CurrentUsers.currentOnlineUser = user;
+                                Intent intent = new Intent(loginActivity.this, LoggedInActivity.class);
+                                startActivity(intent);
+                            }
+                        });
+                        /*Users user = mail.getValue(Users.class);
                         if (user.getPass().equals(pass))
                         {
                             Toast.makeText(loginActivity.this, "Sikeres bejelentkezés!", Toast.LENGTH_SHORT).show();
@@ -112,7 +127,7 @@ public class loginActivity extends AppCompatActivity {
                     }
                     else {
                         Toast.makeText(loginActivity.this, "Ez az email " + email + " nem létezik.", Toast.LENGTH_SHORT).show();
-                        loadingBar.dismiss();
+                        loadingBar.dismiss();*/
                     }
                 }
 
