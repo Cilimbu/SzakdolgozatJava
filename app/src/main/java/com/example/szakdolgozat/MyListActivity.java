@@ -43,7 +43,7 @@ import java.util.List;
 
 public class MyListActivity extends AppCompatActivity {
 
-    public ArrayList<UserListDetails> ListObj;
+    private ArrayList<UserListDetails> ListObj;
     private ListView listView;
     private Button addList, removeList;
     private String inputText ="";
@@ -232,6 +232,21 @@ public class MyListActivity extends AppCompatActivity {
         final DatabaseReference RootRef;
         RootRef = FirebaseDatabase.getInstance().getReference();
         RootRef.child("Lists").child(ID).removeValue();
+
+        RootRef.child("UserListConnect").orderByChild("listID").equalTo(ID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for(DataSnapshot ds: snapshot.getChildren())
+                {
+                    ds.getRef().removeValue();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
     public void Share(String ID, Integer index)
     {

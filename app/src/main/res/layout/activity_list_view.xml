@@ -39,10 +39,22 @@
         android:id="@+id/add_new_list_item_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginRight="15dp"
+        android:layout_marginRight="215dp"
         android:layout_marginLeft="15dp"
         android:layout_alignParentBottom="true"
         android:text="Új listaelem hozzáadása"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/buttons"
+        >
+    </Button>
+    <Button
+        android:id="@+id/del_list_item_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="15dp"
+        android:layout_marginLeft="215dp"
+        android:layout_alignParentBottom="true"
+        android:text="Listaelemek törlése"
         android:layout_marginBottom="15dp"
         android:background="@drawable/buttons"
         >

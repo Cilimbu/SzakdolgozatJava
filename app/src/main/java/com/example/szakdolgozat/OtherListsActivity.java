@@ -75,6 +75,7 @@ public class OtherListsActivity extends AppCompatActivity {
                                         arrayList.add(listDetails);
                                     }
                                 }
+                                listView.setAdapter(arrayAdapter);
                             }
                             @Override
                             public void onCancelled(@NonNull DatabaseError error)
@@ -84,7 +85,7 @@ public class OtherListsActivity extends AppCompatActivity {
                         });
                     }
                 }
-                listView.setAdapter(arrayAdapter);
+                
             }
 
             @Override

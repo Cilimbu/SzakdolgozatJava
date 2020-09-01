@@ -116,7 +116,7 @@ public class RegisterActivity extends AppCompatActivity {
                             else
                             {
                                 loadingBar.dismiss();
-                                Toast.makeText(RegisterActivity.this, "Hiba lépett fel a regisztráció közben, brópálja meg később", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(RegisterActivity.this, "Hiba lépett fel a regisztráció közben, próbálja meg később", Toast.LENGTH_SHORT).show();
                             }
                         }
                         

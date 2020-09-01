@@ -1,12 +1,15 @@
 package com.example.szakdolgozat;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -27,13 +30,14 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class ListViewActivity extends AppCompatActivity {
 
     ListView listView;
     UserListDetails ListDetails;
-    Button addNewListItem;
+    Button addNewListItem, delListItems;
     private String inputText;
     TextView textView1,textView2;
 
@@ -45,6 +49,7 @@ public class ListViewActivity extends AppCompatActivity {
         ListDetails = (UserListDetails)getIntent().getSerializableExtra("ListDetails");
         textView1 = (TextView) findViewById(R.id.nametextView);
         textView2 = (TextView) findViewById(R.id.datetextView);
+        delListItems = (Button) findViewById(R.id.del_list_item_button);
         RefreshList();
         textView1.setText(ListDetails.getName());
         textView2.setText(ListDetails.getDate());
@@ -77,6 +82,43 @@ public class ListViewActivity extends AppCompatActivity {
             }
         });
 
+        delListItems.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                String[] names = ListDetails.getListitems().split(",");
+
+                final ArrayList<Integer> selectedItems = new ArrayList<Integer>();
+                AlertDialog.Builder builder = new AlertDialog.Builder(ListViewActivity.this);
+                builder.setTitle("Válassza ki mely elemeket szeretné törölni").setMultiChoiceItems(names, null, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i, boolean b) {
+                        if (b) {
+                            selectedItems.add(i);
+                        } else if (selectedItems.contains(i)) {
+                            selectedItems.remove(Integer.valueOf(i));
+                        }
+                    }
+                });
+                builder.setPositiveButton("Törlés", new DialogInterface.OnClickListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.O)
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        for (Integer p : selectedItems) {
+                            Delete(selectedItems);
+                        }
+                        Toast.makeText(ListViewActivity.this, "Sikeres törlés", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                builder.setNegativeButton("Mégse", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Toast.makeText(ListViewActivity.this, "Törlés megszakítva", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                builder.show();
+            }
+        });
 
     }
     public void RefreshList() {
@@ -137,5 +179,29 @@ public class ListViewActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void Delete(ArrayList<Integer> listItems)
+    {
+        ArrayList<String> items = new ArrayList<String>();
+        String[] split = ListDetails.getListitems().split(",");
+        for(int i=0; i<split.length; i++)
+        {
+            if(!listItems.contains(i))
+            {
+                items.add(split[i]);
+            }
+        }
+        String joineditems = TextUtils.join(",", items);
+        ListDetails.setListitems(joineditems);
+
+        final DatabaseReference RootRef;
+        RootRef = FirebaseDatabase.getInstance().getReference();
+
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("listitems", joineditems);
+        RootRef.child("Lists").child(ListDetails.getID()).updateChildren(map);
+        RefreshList();
     }
 }

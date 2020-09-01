@@ -48,7 +48,7 @@ public class GroupChatActivity extends AppCompatActivity {
     private DatabaseReference RootRef = FirebaseDatabase.getInstance().getReference();
     private String inputText="";
     private String inputText2="";
-    public ArrayList<ChatRoomDetails> ListObj;
+    private ArrayList<ChatRoomDetails> ListObj;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,14 +67,20 @@ public class GroupChatActivity extends AppCompatActivity {
         delRoomButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String[] names = new String[ListObj.size()];
+                ArrayList<String> namesList = new ArrayList<String>();
+                String currentUser = CurrentUsers.currentOnlineUser.getEmail();
+
                 for(int i=0 ; i< ListObj.size();i++)
                 {
-                    if("c".equals(CurrentUsers.currentOnlineUser.getEmail()))
+                    String name = ListObj.get(i).getCreator();
+
+                    if(name.equals(currentUser))
                     {
-                        names[i] = ListObj.get(i).getCreator();
+                        namesList.add(name);
                     }
                 }
+                String[] names = new String[namesList.size()];
+                names = namesList.toArray(names);
                 final ArrayList<Integer> selectedItems = new ArrayList<Integer>();
                 AlertDialog.Builder builder = new AlertDialog.Builder(GroupChatActivity.this);
                 builder.setTitle("Válassza ki mely elemeket szeretné törölni").setMultiChoiceItems(names, null, new DialogInterface.OnMultiChoiceClickListener() {

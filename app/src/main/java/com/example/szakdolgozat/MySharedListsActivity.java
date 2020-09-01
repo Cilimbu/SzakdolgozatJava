@@ -51,7 +51,7 @@ public class MySharedListsActivity extends AppCompatActivity {
             {
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(MySharedListsActivity.this);
-                builder.setTitle("Adja meg a lista nevét!");
+                builder.setTitle("Adja meg az email címét annak akivel meg akarja osztani!");
                 final EditText input = new EditText(MySharedListsActivity.this);
                 input.setInputType(InputType.TYPE_CLASS_TEXT);
                 builder.setView(input);
@@ -169,7 +169,7 @@ public class MySharedListsActivity extends AppCompatActivity {
         final DatabaseReference RootRef;
         RootRef = FirebaseDatabase.getInstance().getReference();
 
-        RootRef.child("UserListConnect").orderByChild("userID").equalTo(userID).addValueEventListener(new ValueEventListener() {
+        RootRef.child("UserListConnect").orderByChild("userID").equalTo(userID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 boolean Exists = false;
