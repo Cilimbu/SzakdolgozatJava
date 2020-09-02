@@ -260,11 +260,11 @@ public class MyListActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     if(userdataMap.get("shared").equals("0"))
                     {
-                        Toast.makeText(MyListActivity.this, "Sikeres megosztás!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MyListActivity.this, "Már nem osztod meg a listát.", Toast.LENGTH_SHORT).show();
                     }
                     else
                         {
-                            Toast.makeText(MyListActivity.this, "Már nem osztod meg a listát.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MyListActivity.this, "Sikeres megosztás!", Toast.LENGTH_SHORT).show();
                     }
 
                 } else {

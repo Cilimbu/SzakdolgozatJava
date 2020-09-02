@@ -71,7 +71,7 @@ public class PrivateChatViewActivity extends AppCompatActivity {
                 map2.put("message", input_message.getText().toString());
                 message_root.updateChildren(map2);
 
-                sendNotification(sender,chat_message);
+
 
                 input_message.getText().clear();
             }
@@ -80,6 +80,11 @@ public class PrivateChatViewActivity extends AppCompatActivity {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 append_chat(snapshot);
+                if (!sender.equals(CurrentUsers.currentOnlineUser.getEmail()))
+                {
+                    sendNotification(sender,chat_message);
+                }
+
             }
 
             @Override
@@ -122,7 +127,7 @@ public class PrivateChatViewActivity extends AppCompatActivity {
 
         }
     }
-    private void sendNotification(final String message, final String sender)
+    private void sendNotification(final String sender, final String message)
     {
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         String email;

@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -26,6 +27,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import io.paperdb.Paper;
 
@@ -97,27 +103,25 @@ public class loginActivity extends AppCompatActivity {
             RootRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    String temp = email.replace(".",  ",");
+                    final String temp = email.replace(".",  ",");
                     final DataSnapshot mail = snapshot.child("Users").child(temp);
                     if(mail.exists())
                     {
-                        firebaseAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                Users user = mail.getValue(Users.class);
-                                CurrentUsers.currentOnlineUser = user;
-                                Intent intent = new Intent(loginActivity.this, LoggedInActivity.class);
-                                startActivity(intent);
-                            }
-                        });
-                        /*Users user = mail.getValue(Users.class);
+                        Users user = mail.getValue(Users.class);
                         if (user.getPass().equals(pass))
                         {
-                            Toast.makeText(loginActivity.this, "Sikeres bejelentkezés!", Toast.LENGTH_SHORT).show();
-                            loadingBar.dismiss();
-                            CurrentUsers.currentOnlineUser = user;
-                            Intent intent = new Intent(loginActivity.this, LoggedInActivity.class);
-                            startActivity(intent);
+                            firebaseAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    Users user = mail.getValue(Users.class);
+                                    CurrentUsers.currentOnlineUser = user;
+                                    refreshToken(temp);
+                                    Toast.makeText(loginActivity.this, "Sikeres bejelentkezés!", Toast.LENGTH_SHORT).show();
+                                    loadingBar.dismiss();
+                                    Intent intent = new Intent(loginActivity.this, LoggedInActivity.class);
+                                    startActivity(intent);
+                                }
+                            });
                         }
                         else
                         {
@@ -127,7 +131,7 @@ public class loginActivity extends AppCompatActivity {
                     }
                     else {
                         Toast.makeText(loginActivity.this, "Ez az email " + email + " nem létezik.", Toast.LENGTH_SHORT).show();
-                        loadingBar.dismiss();*/
+                        loadingBar.dismiss();
                     }
                 }
 
@@ -141,6 +145,28 @@ public class loginActivity extends AppCompatActivity {
         {
             e.printStackTrace();
         }
+    }
+
+    public void refreshToken(final String email)
+    {
+        final DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+
+        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+            @Override
+            public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                if(task.isSuccessful())
+                {
+                    String token = task.getResult().getToken();
+                    Log.i("asdasdasdasda",token);
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("token", token);
+                    rootRef.child("Users").child(email).updateChildren(map);
+                    Toast.makeText(loginActivity.this, "Token sikeresen frissítve", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+
     }
 
 }

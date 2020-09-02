@@ -23,6 +23,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
+import org.w3c.dom.Text;
+
 import java.util.HashMap;
 import java.util.InputMismatchException;
 
@@ -82,6 +84,10 @@ public class RegisterActivity extends AppCompatActivity {
            {
                Toast.makeText(this, "Kérlek írd be a jelszavad!", Toast.LENGTH_SHORT).show();
            }
+           else if(pass.length()<6)
+           {
+               Toast.makeText(this, "A jelszónak minimum 7 karakter hosszúnak kell lennie!", Toast.LENGTH_SHORT).show();
+           }
            else if(TextUtils.isEmpty(email))
            {
                Toast.makeText(this, "Kérlek írd be az email címed!", Toast.LENGTH_SHORT).show();
@@ -91,9 +97,8 @@ public class RegisterActivity extends AppCompatActivity {
                loadingBar.setMessage("Kérlek várj...");
                loadingBar.setCanceledOnTouchOutside(false);
                loadingBar.show();
+               ValidateName(name, email, pass, token);
            }
-
-           ValidateName(name, email, pass, token);
        }
        catch (Exception e)
        {

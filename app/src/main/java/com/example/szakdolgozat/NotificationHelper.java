@@ -1,6 +1,8 @@
 package com.example.szakdolgozat;
 
 import android.app.DownloadManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 
 import androidx.core.app.NotificationCompat;
@@ -24,6 +26,23 @@ public class NotificationHelper {
     private static String CHANNEL_ID = "Szakdolgozat";
     private static String URL = "https://fcm.googleapis.com/fcm/send";
 
+    public static void createNotificationChannel(Context context) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+            String CHANNEL_ID = "Szakdolgozat";
+            CharSequence name = "Szakdolgozat";
+            String Description = "This is my channel";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+            mChannel.setDescription(Description);
+            mChannel.enableLights(true);
+            mChannel.enableVibration(true);
+            notificationManager.createNotificationChannel(mChannel);
+        }
+    }
+
+
 
     public static void displayNotification(Context context, String title, String body)
     {
@@ -35,6 +54,7 @@ public class NotificationHelper {
 
         NotificationManagerCompat mNotificationManager = NotificationManagerCompat.from(context);
         mNotificationManager.notify(1,mBuilder.build());
+
     }
 
     public static void sendNotification(Context context, String token, String title, String body)
@@ -66,13 +86,14 @@ public class NotificationHelper {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     Map<String, String> header = new HashMap<>();
-                    header.put("content-type","application/json");
-                    header.put("authorization", "AAAAQbPpA1A:APA91bHCgR72W4tUD7evh72kQad7sHDbPNJAaaweiTLHbvwlPeWt2VhOvqg502Sgi5_43_QIdR2WyFnYYuD4zyXvpu-e93IHwxjsVzNsHUxtFYBgKJYrBH8dDwPQK3FfFqZnfjfsnUUu");
+                    header.put("Content-Type","application/json");
+                    header.put("Authorization", "key=AAAAQbPpA1A:APA91bHCgR72W4tUD7evh72kQad7sHDbPNJAaaweiTLHbvwlPeWt2VhOvqg502Sgi5_43_QIdR2WyFnYYuD4zyXvpu-e93IHwxjsVzNsHUxtFYBgKJYrBH8dDwPQK3FfFqZnfjfsnUUu");
 
                     return header;
                 }
             };
             mRequestQue.add(request);
+            displayNotification(context, title, body);
         }
         catch (JSONException e)
         {

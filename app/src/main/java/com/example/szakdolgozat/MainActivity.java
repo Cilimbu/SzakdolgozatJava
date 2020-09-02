@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity
         loadingBar = new ProgressDialog(this);
 
         Paper.init(this);
+        NotificationHelper.createNotificationChannel(this);
         loginNowButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

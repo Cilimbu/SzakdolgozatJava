@@ -108,7 +108,10 @@ public class PrivateChatActivity extends AppCompatActivity {
                     temp.setpartner(partner);
                     String roomID = ds.child("roomID").getValue(String.class);
                     temp.setRoomID(roomID);
-                    arrayList.add(temp);
+                    if(partner.equals(CurrentUsers.currentOnlineUser.getEmail()) || creator.equals(CurrentUsers.currentOnlineUser.getEmail()))
+                    {
+                        arrayList.add(temp);
+                    }
                 }
                 listView.setAdapter(arrayAdapter);
             }

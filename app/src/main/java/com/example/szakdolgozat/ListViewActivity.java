@@ -27,6 +27,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.sql.Ref;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -104,9 +105,7 @@ public class ListViewActivity extends AppCompatActivity {
                     @RequiresApi(api = Build.VERSION_CODES.O)
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        for (Integer p : selectedItems) {
-                            Delete(selectedItems);
-                        }
+                        Delete(selectedItems);
                         Toast.makeText(ListViewActivity.this, "Sikeres törlés", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -172,7 +171,7 @@ public class ListViewActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
                     ListDetails.setListitems(addeditem);
-                    Toast.makeText(ListViewActivity.this, "Sikeres lista létrehozás!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ListViewActivity.this, "Sikeres listaelem létrehozás!", Toast.LENGTH_SHORT).show();
 
                 } else {
                     Toast.makeText(ListViewActivity.this, "Hiba lépett fel a lista létrehozása közben, próbálja meg később", Toast.LENGTH_SHORT).show();
@@ -181,11 +180,13 @@ public class ListViewActivity extends AppCompatActivity {
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public void Delete(ArrayList<Integer> listItems)
     {
+        final DatabaseReference RootRef;
+        RootRef = FirebaseDatabase.getInstance().getReference();
         ArrayList<String> items = new ArrayList<String>();
         String[] split = ListDetails.getListitems().split(",");
+
         for(int i=0; i<split.length; i++)
         {
             if(!listItems.contains(i))
@@ -196,12 +197,10 @@ public class ListViewActivity extends AppCompatActivity {
         String joineditems = TextUtils.join(",", items);
         ListDetails.setListitems(joineditems);
 
-        final DatabaseReference RootRef;
-        RootRef = FirebaseDatabase.getInstance().getReference();
-
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("listitems", joineditems);
         RootRef.child("Lists").child(ListDetails.getID()).updateChildren(map);
+
         RefreshList();
     }
 }

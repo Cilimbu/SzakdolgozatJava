@@ -5,60 +5,65 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ProfileActivity">
+
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        tools:layout_editor_absoluteX="-4dp">
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <ImageView
                 android:id="@+id/profile_pic"
                 android:layout_width="125dp"
                 android:layout_height="125dp"
                 android:layout_below="@+id/profile_head_text"
-                android:background="@drawable/profile"
-                android:layout_marginTop="15dp"
                 android:layout_centerHorizontal="true"
-            />
+                android:layout_marginTop="15dp"
+                android:background="@drawable/profile" />
+
             <TextView
                 android:id="@+id/profile_head_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="MyList Profil"
-                android:textSize="40sp"
-                android:textColor="@color/colorPrimaryDark"
-                android:textStyle="bold"
                 android:layout_marginLeft="5dp"
+                android:text="MyList Profil"
                 android:textAlignment="center"
-            />
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="40sp"
+                android:textStyle="bold" />
+
             <TextView
                 android:id="@+id/profile_user_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Felhasználó név"
-                android:textSize="25sp"
-                android:textColor="@color/colorPrimaryDark"
-                android:textStyle="bold"
                 android:layout_below="@+id/profile_pic"
                 android:layout_marginTop="5dp"
+                android:text="Felhasználó név"
                 android:textAlignment="center"
-                />
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="25sp"
+                android:textStyle="bold" />
+
             <TextView
                 android:id="@+id/profile_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Email"
-                android:textSize="25sp"
-                android:textColor="@color/colorPrimaryDark"
-                android:textStyle="bold"
                 android:layout_below="@+id/profile_user_name"
                 android:layout_marginTop="5dp"
+                android:text="Email"
                 android:textAlignment="center"
-                />
-
-
-
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="25sp"
+                android:textStyle="bold" />
         </RelativeLayout>
     </ScrollView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
