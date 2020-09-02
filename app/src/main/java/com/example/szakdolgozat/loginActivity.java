@@ -22,6 +22,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -38,7 +39,7 @@ import io.paperdb.Paper;
 public class loginActivity extends AppCompatActivity {
 
     private EditText InputEmail, InputPass;
-    private Button LoginButton;
+    private Button LoginButton, forgotPassButton;
     private ProgressDialog loadingBar;
     private CheckBox ckBoxRememberMe;
     private FirebaseAuth firebaseAuth;
@@ -54,7 +55,16 @@ public class loginActivity extends AppCompatActivity {
         InputEmail = (EditText) findViewById(R.id.login_email_input);
         loadingBar = new ProgressDialog(this);
         ckBoxRememberMe = (CheckBox)findViewById(R.id.remember_me);
+        forgotPassButton = (Button) findViewById(R.id.forgot_pass);
         firebaseAuth = FirebaseAuth.getInstance();
+
+        forgotPassButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(loginActivity.this, ForgotPassActivity.class);
+                startActivity(intent);
+            }
+        });
 
         LoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,6 +99,38 @@ public class loginActivity extends AppCompatActivity {
 
     private void AllowAccessToAccount(final String email,final String pass)
     {
+
+        /*if(ckBoxRememberMe.isChecked())
+        {
+            Paper.book().write(CurrentUsers.UserEmailKey, email);
+            Paper.book().write(CurrentUsers.UserPassKey, pass);
+        }
+
+        final String temp = email.replace(".",",");
+        firebaseAuth.signInWithEmailAndPassword(email,pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if(!task.isSuccessful())
+                {
+                    if (pass.length() < 6) {
+                        Toast.makeText(loginActivity.this, "A jelszónak legalább 7 karakterből kell állnia", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(loginActivity.this, "Nem sikerült belépni", Toast.LENGTH_LONG).show();
+                        loadingBar.dismiss();
+                    }
+                }
+                else{
+                    loadingBar.dismiss();
+                    refreshToken(temp);
+                    Toast.makeText(loginActivity.this, "Sikeres bejelentkezés!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(loginActivity.this, LoggedInActivity.class);
+                    startActivity(intent);
+                }
+            }
+        });*/
+
+
+
         try
         {
             if(ckBoxRememberMe.isChecked())
@@ -99,7 +141,6 @@ public class loginActivity extends AppCompatActivity {
 
             final DatabaseReference RootRef;
             RootRef = FirebaseDatabase.getInstance().getReference();
-
             RootRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -134,7 +175,6 @@ public class loginActivity extends AppCompatActivity {
                         loadingBar.dismiss();
                     }
                 }
-
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
 
