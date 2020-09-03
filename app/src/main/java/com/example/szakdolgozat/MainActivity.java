@@ -10,19 +10,29 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.szakdolgozat.CurrentOnline.CurrentUsers;
 import com.example.szakdolgozat.Model.Users;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import org.w3c.dom.Text;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import io.paperdb.Paper;
 
@@ -30,6 +40,7 @@ public class MainActivity extends AppCompatActivity
 {
     private Button regNowButton, loginNowButton;
     private ProgressDialog loadingBar;
+    private FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +50,7 @@ public class MainActivity extends AppCompatActivity
         regNowButton = (Button) findViewById(R.id.main_reg_btn);
         loginNowButton = (Button) findViewById(R.id.main_login_btn);
         loadingBar = new ProgressDialog(this);
+        firebaseAuth = FirebaseAuth.getInstance();
 
         Paper.init(this);
         NotificationHelper.createNotificationChannel(this);
@@ -60,7 +72,7 @@ public class MainActivity extends AppCompatActivity
         String UserEmailKey = Paper.book().read(CurrentUsers.UserEmailKey);
         String UserPassKey = Paper.book().read(CurrentUsers.UserPassKey);
 
-        if (UserEmailKey != "" && UserPassKey != "")
+        if (UserEmailKey != null && UserPassKey != null)
         {
             if(!TextUtils.isEmpty(UserEmailKey) && !TextUtils.isEmpty(UserPassKey))
             {
@@ -72,43 +84,63 @@ public class MainActivity extends AppCompatActivity
                 loadingBar.show();
             }
         }
-
     }
 
     private void AllowAccess(final String email, final String pass) {
-        final DatabaseReference RootRef;
-        RootRef = FirebaseDatabase.getInstance().getReference();
-        RootRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        final DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        final String temp = email.replace(".",",");
+        firebaseAuth.signInWithEmailAndPassword(email,pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String temp = email.replace(".",  ",");
-                DataSnapshot mail = snapshot.child("Users").child(temp);
-                if(mail.exists())
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if(!task.isSuccessful())
                 {
-                    Users user = mail.getValue(Users.class);
-                    CurrentUsers.currentOnlineUser = user;
-                    if (user.getPass().equals(pass))
-                    {
-                        Toast.makeText(MainActivity.this, "Sikeres bejelentkezés!", Toast.LENGTH_SHORT).show();
-                        loadingBar.dismiss();
-                        Intent intent = new Intent(MainActivity.this, LoggedInActivity.class);
-                        startActivity(intent);
-                    }
-                    else
-                    {
-                        Toast.makeText(MainActivity.this, "Rossz email vagy jelszó!", Toast.LENGTH_SHORT).show();
+                    if (pass.length() < 6) {
+                        Toast.makeText(MainActivity.this, "A jelszónak legalább 7 karakterből kell állnia", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(MainActivity.this, "Nem sikerült belépni", Toast.LENGTH_LONG).show();
                         loadingBar.dismiss();
                     }
                 }
-                else {
-                    Toast.makeText(MainActivity.this, "Ez az email " + email + " nem létezik.", Toast.LENGTH_SHORT).show();
+                else{
+                    rootRef.child("Users").child(temp).child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            String name = snapshot.getValue(String.class);
+                            CurrentUsers.currentOnlineUser.setName(name);
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+                    CurrentUsers.currentOnlineUser.setEmail(email);
+                    Toast.makeText(MainActivity.this, ""+CurrentUsers.currentOnlineUser.getEmail(), Toast.LENGTH_SHORT).show();
                     loadingBar.dismiss();
+                    refreshToken(temp);
+                    Toast.makeText(MainActivity.this, "Sikeres bejelentkezés!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(MainActivity.this, LoggedInActivity.class);
+                    startActivity(intent);
                 }
             }
+        });
+    }
 
+    public void refreshToken(final String email)
+    {
+        final DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+
+        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
+            public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                if(task.isSuccessful())
+                {
+                    String token = task.getResult().getToken();
+                    Log.i("asdasdasdasda",token);
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("token", token);
+                    rootRef.child("Users").child(email).updateChildren(map);
+                    Toast.makeText(MainActivity.this, "Token sikeresen frissítve", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

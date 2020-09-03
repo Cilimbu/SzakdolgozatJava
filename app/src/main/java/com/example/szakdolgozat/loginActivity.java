@@ -99,8 +99,7 @@ public class loginActivity extends AppCompatActivity {
 
     private void AllowAccessToAccount(final String email,final String pass)
     {
-
-        /*if(ckBoxRememberMe.isChecked())
+        if(ckBoxRememberMe.isChecked())
         {
             Paper.book().write(CurrentUsers.UserEmailKey, email);
             Paper.book().write(CurrentUsers.UserPassKey, pass);
@@ -120,18 +119,35 @@ public class loginActivity extends AppCompatActivity {
                     }
                 }
                 else{
-                    loadingBar.dismiss();
-                    refreshToken(temp);
-                    Toast.makeText(loginActivity.this, "Sikeres bejelentkezés!", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(loginActivity.this, LoggedInActivity.class);
-                    startActivity(intent);
+                    DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+                    rootRef.child("Users").child(temp).child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            String name = snapshot.getValue(String.class);
+                            Log.i("name",name);
+                            CurrentUsers.currentOnlineUser.setEmail(email);
+                            CurrentUsers.currentOnlineUser.setName(name);
+                            Toast.makeText(loginActivity.this, ""+CurrentUsers.currentOnlineUser.getEmail(), Toast.LENGTH_SHORT).show();
+                            loadingBar.dismiss();
+                            refreshToken(temp);
+                            Toast.makeText(loginActivity.this, "Sikeres bejelentkezés!", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(loginActivity.this, LoggedInActivity.class);
+                            startActivity(intent);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+
                 }
             }
-        });*/
+        });
 
 
 
-        try
+        /*try
         {
             if(ckBoxRememberMe.isChecked())
             {
@@ -184,7 +200,7 @@ public class loginActivity extends AppCompatActivity {
         catch (Exception e)
         {
             e.printStackTrace();
-        }
+        }*/
     }
 
     public void refreshToken(final String email)
@@ -205,8 +221,6 @@ public class loginActivity extends AppCompatActivity {
                 }
             }
         });
-
-
     }
 
 }

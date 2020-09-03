@@ -51,7 +51,7 @@ public class OtherListsActivity extends AppCompatActivity {
         RootRef = FirebaseDatabase.getInstance().getReference();
         reference= FirebaseDatabase.getInstance().getReference().child("Lists");
         final ArrayList<UserListDetails> arrayList = new ArrayList<UserListDetails>();
-        final ArrayAdapter arrayAdapter = new ArrayAdapter<UserListDetails>(this,R.layout.list_items, R.id.textt, arrayList);
+        final ArrayAdapter arrayAdapter = new ArrayAdapter<UserListDetails>(this,R.layout.list_items_checkbox, R.id.textt, arrayList);
         reference.orderByChild("shared").equalTo("1").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -65,7 +65,7 @@ public class OtherListsActivity extends AppCompatActivity {
                     final String listitems = ds.child("listitems").getValue(String.class);
                     String date = ds.child("date").getValue(String.class);
                     String shared = ds.child("shared").getValue(String.class);
-                    final UserListDetails listDetails = new UserListDetails(ID, email, name, listitems, shared, date);
+                    final UserListDetails listDetails = new UserListDetails(ID, email, name, shared, date);
                     if (!email.equals(CurrentUsers.currentOnlineUser.getEmail())) {
                         RootRef.child("UserListConnect").orderByChild("userID").equalTo(CurrentUsers.currentOnlineUser.getEmail().replace(".",",")).addValueEventListener(new ValueEventListener() {
                             @Override

@@ -104,8 +104,8 @@ public class MySharedListsActivity extends AppCompatActivity {
                     temp.setID(ID);
                     String email = ds.child("email").getValue(String.class);
                     temp.setEmail(email);
-                    String listitems = ds.child("listitems").getValue(String.class);
-                    temp.setListitems(listitems);
+                    //String listitems = ds.child("listitems").getValue(String.class);
+                    //temp.setListitems(listitems);
                     String date = ds.child("date").getValue(String.class);
                     temp.setDate(date);
                     String shared = ds.child("shared").getValue(String.class);

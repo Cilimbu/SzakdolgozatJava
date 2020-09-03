@@ -5,14 +5,17 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.LauncherActivity;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -41,6 +44,8 @@ public class ListViewActivity extends AppCompatActivity {
     Button addNewListItem, delListItems;
     private String inputText;
     TextView textView1,textView2;
+    final ArrayList<ListItemDetails> arrayList = new ArrayList<>();
+
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,9 +56,24 @@ public class ListViewActivity extends AppCompatActivity {
         textView1 = (TextView) findViewById(R.id.nametextView);
         textView2 = (TextView) findViewById(R.id.datetextView);
         delListItems = (Button) findViewById(R.id.del_list_item_button);
-        RefreshList();
+        final ArrayAdapter arrayAdapter = new ArrayAdapter<ListItemDetails>(this, R.layout.list_items_checkbox, R.id.textt, arrayList);
+        RefreshList(arrayAdapter);
         textView1.setText(ListDetails.getName());
         textView2.setText(ListDetails.getDate());
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                ListItemDetails listItemDetails = (ListItemDetails) arrayAdapter.getItem(i);
+
+                toggleChecked(i);
+                RefreshList(arrayAdapter);
+                CheckBox checkBox = (CheckBox) view.findViewById(R.id.listitem_checkbox);
+                checkBox.setChecked(!checkBox.isChecked());
+            }
+        });
+
+
 
         addNewListItem.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,7 +90,7 @@ public class ListViewActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         inputText = input.getText().toString();
                         Upload(inputText);
-                        RefreshList();
+                        RefreshList(arrayAdapter);
                     }
                 });
                 builder.setNegativeButton("Mégse", new DialogInterface.OnClickListener() {
@@ -87,8 +107,11 @@ public class ListViewActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                String[] names = ListDetails.getListitems().split(",");
-
+                String[] names = new String[arrayList.size()];
+                for(int i = 0; i<arrayList.size();i++)
+                {
+                    names[i] = arrayList.get(i).getName();
+                }
                 final ArrayList<Integer> selectedItems = new ArrayList<Integer>();
                 AlertDialog.Builder builder = new AlertDialog.Builder(ListViewActivity.this);
                 builder.setTitle("Válassza ki mely elemeket szeretné törölni").setMultiChoiceItems(names, null, new DialogInterface.OnMultiChoiceClickListener() {
@@ -107,6 +130,7 @@ public class ListViewActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         Delete(selectedItems);
                         Toast.makeText(ListViewActivity.this, "Sikeres törlés", Toast.LENGTH_SHORT).show();
+                        RefreshList(arrayAdapter);
                     }
                 });
                 builder.setNegativeButton("Mégse", new DialogInterface.OnClickListener() {
@@ -120,27 +144,40 @@ public class ListViewActivity extends AppCompatActivity {
         });
 
     }
-    public void RefreshList() {
+    public void RefreshList(final ArrayAdapter<ListItemDetails> arrayAdapter) {
         DatabaseReference reference;
         reference=FirebaseDatabase.getInstance().getReference().child("Lists");
-        final ArrayList<String> arrayList = new ArrayList<>();
-        final ArrayAdapter arrayAdapter = new ArrayAdapter<String>(this, R.layout.list_items, R.id.textt, arrayList);
-        reference.orderByChild("ID").equalTo(ListDetails.getID()).addValueEventListener(new ValueEventListener() {
+        reference.child(ListDetails.getID()).child("listitems").orderByChild("name").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                arrayList.clear();
                 for(DataSnapshot ds : snapshot.getChildren())
                 {
-                    String listitems = ds.child("listitems").getValue(String.class);
-                    if(!(listitems.length() == 0))
-                    {
-                        for (String item : listitems.split(",")) {
-                            arrayList.add(item);
-                        }
-                    }
-                    listView.setAdapter(arrayAdapter);
+                    ListItemDetails temp = new ListItemDetails();
+                    String name = ds.child("name").getValue(String.class);
+                    temp.setName(name);
+                    String ID = ds.child("ID").getValue(String.class);
+                    temp.setID(ID);
+                    String checked = ds.child("checked").getValue(String.class);
+                    temp.setChecked(checked);
+                    arrayList.add(temp);
                 }
+                listView.setAdapter(arrayAdapter);
 
+                for(int i=0; i<listView.getAdapter().getCount(); i++)
+                {
+                    View v = getViewByPosition(i,listView);
+                    CheckBox checkBox = (CheckBox) v.findViewById(R.id.listitem_checkbox);
+                    if(arrayList.get(i).getChecked().equals("1"))
+                    {
+                        checkBox.setChecked(true);
+                    }
+                    else {
+                        checkBox.setChecked(false);
+                    }
+                }
             }
+
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
@@ -153,24 +190,16 @@ public class ListViewActivity extends AppCompatActivity {
     {
         final DatabaseReference RootRef;
         RootRef = FirebaseDatabase.getInstance().getReference();
-
+        String ListItemID = RootRef.push().getKey();
+        String checked = "0";
         HashMap<String, Object> userdataMap = new HashMap<>();
-        userdataMap.put("email", CurrentUsers.currentOnlineUser.getEmail());
-        userdataMap.put("ID", ListDetails.getID());
-        userdataMap.put("name", ListDetails.getName());
-        String newlistitems = ListDetails.getListitems();
-        if(!(newlistitems.length()==0))
-        {
-            newlistitems = newlistitems.concat(",");
-        }
-        newlistitems = newlistitems.concat(listitem);
-        userdataMap.put("listitems", newlistitems);
-        final String addeditem = newlistitems;
-        RootRef.child("Lists").child(ListDetails.getID()).updateChildren(userdataMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+        userdataMap.put("ID", ListItemID);
+        userdataMap.put("name", listitem);
+        userdataMap.put("checked", checked);
+        RootRef.child("Lists").child(ListDetails.getID()).child("listitems").child(ListItemID).updateChildren(userdataMap).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                    ListDetails.setListitems(addeditem);
                     Toast.makeText(ListViewActivity.this, "Sikeres listaelem létrehozás!", Toast.LENGTH_SHORT).show();
 
                 } else {
@@ -184,23 +213,44 @@ public class ListViewActivity extends AppCompatActivity {
     {
         final DatabaseReference RootRef;
         RootRef = FirebaseDatabase.getInstance().getReference();
-        ArrayList<String> items = new ArrayList<String>();
-        String[] split = ListDetails.getListitems().split(",");
 
-        for(int i=0; i<split.length; i++)
+        for(Integer i : listItems)
         {
-            if(!listItems.contains(i))
-            {
-                items.add(split[i]);
-            }
+            RootRef.child("Lists").child(ListDetails.getID()).child("listitems").child(arrayList.get(i).getID()).removeValue();
         }
-        String joineditems = TextUtils.join(",", items);
-        ListDetails.setListitems(joineditems);
 
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("listitems", joineditems);
-        RootRef.child("Lists").child(ListDetails.getID()).updateChildren(map);
+    }
+    public void toggleChecked(final Integer i)
+    {
+        final DatabaseReference RootRef;
+        RootRef = FirebaseDatabase.getInstance().getReference();
 
-        RefreshList();
+        RootRef.child("Lists").child(ListDetails.getID()).child("listitems").child(arrayList.get(i).getID()).child("checked").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String checked = snapshot.getValue(String.class);
+                Map<String, Object> map = new HashMap<>();
+                map.put("checked",(checked.equals("0") ? "1" : "0"));
+
+                RootRef.child("Lists").child(ListDetails.getID()).child("listitems").child(arrayList.get(i).getID()).updateChildren(map);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+    public View getViewByPosition(int position, ListView listView) {
+        final int firstListItemPosition = listView.getFirstVisiblePosition();
+        final int lastListItemPosition =firstListItemPosition + listView.getChildCount() - 1;
+
+        if (position < firstListItemPosition || position > lastListItemPosition ) {
+            return listView.getAdapter().getView(position, listView.getChildAt(position), listView);
+        } else {
+            final int childIndex = position - firstListItemPosition;
+            return listView.getChildAt(childIndex);
+        }
     }
 }

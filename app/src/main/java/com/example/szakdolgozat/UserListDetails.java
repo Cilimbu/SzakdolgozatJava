@@ -5,13 +5,12 @@ import java.io.Serializable;
 
 public class UserListDetails implements Serializable {
 
-    private String ID, email, name, listitems, shared, date;
+    private String ID, email, name, shared, date;
 
-    public UserListDetails(String ID, String email, String name, String listitems, String shared, String date) {
+    public UserListDetails(String ID, String email, String name, String shared, String date) {
         this.ID = ID;
         this.email = email;
         this.name = name;
-        this.listitems = listitems;
         this.shared = shared;
         this.date = date;
     }
@@ -47,14 +46,6 @@ public class UserListDetails implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getListitems() {
-        return listitems;
-    }
-
-    public void setListitems(String listitems) {
-        this.listitems = listitems;
     }
 
     public String getShared() {

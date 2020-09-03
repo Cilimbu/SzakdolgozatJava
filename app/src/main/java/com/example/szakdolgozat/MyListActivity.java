@@ -65,6 +65,7 @@ public class MyListActivity extends AppCompatActivity {
                 return true;
             }
         });
+        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 
         removeList.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -178,8 +179,6 @@ public class MyListActivity extends AppCompatActivity {
                     temp.setID(ID);
                     String email = ds.child("email").getValue(String.class);
                     temp.setEmail(email);
-                    String listitems = ds.child("listitems").getValue(String.class);
-                    temp.setListitems(listitems);
                     String date = ds.child("date").getValue(String.class);
                     temp.setDate(date);
                     String shared = ds.child("shared").getValue(String.class);
@@ -206,13 +205,11 @@ public class MyListActivity extends AppCompatActivity {
         SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd");
         Date date = new Date(System.currentTimeMillis());
         String ListID = RootRef.push().getKey();
-        String ListItem = "";
         String shared = "0";
         HashMap<String, Object> userdataMap = new HashMap<>();
         userdataMap.put("email", CurrentUsers.currentOnlineUser.getEmail());
         userdataMap.put("ID", ListID);
         userdataMap.put("name", name);
-        userdataMap.put("listitems", ListItem);
         userdataMap.put("shared", shared);
         userdataMap.put("date", formatter.format(date));
         RootRef.child("Lists").child(ListID).updateChildren(userdataMap).addOnCompleteListener(new OnCompleteListener<Void>() {
