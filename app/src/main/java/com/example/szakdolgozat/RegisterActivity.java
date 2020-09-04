@@ -73,7 +73,7 @@ public class RegisterActivity extends AppCompatActivity {
     {
        try {
            String name = InputName.getText().toString();
-           String email = InputEmail.getText().toString();
+           String email = InputEmail.getText().toString().toLowerCase();
            String pass = InputPass.getText().toString();
 
            if(TextUtils.isEmpty(name))
@@ -123,7 +123,6 @@ public class RegisterActivity extends AppCompatActivity {
                     HashMap<String, Object> userdataMap = new HashMap<>();
                     userdataMap.put("email", email);
                     userdataMap.put("name", name);
-                    userdataMap.put("pass", pass);
                     userdataMap.put("token", token);
                     RootRef.child("Users").child(temp).updateChildren(userdataMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override

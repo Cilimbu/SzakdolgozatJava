@@ -76,7 +76,7 @@ public class loginActivity extends AppCompatActivity {
     }
     private void LoginUser()
     {
-        String email = InputEmail.getText().toString();
+        String email = InputEmail.getText().toString().toLowerCase();
         String pass = InputPass.getText().toString();
 
         if(TextUtils.isEmpty(pass))
@@ -124,10 +124,8 @@ public class loginActivity extends AppCompatActivity {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             String name = snapshot.getValue(String.class);
-                            Log.i("name",name);
                             CurrentUsers.currentOnlineUser.setEmail(email);
                             CurrentUsers.currentOnlineUser.setName(name);
-                            Toast.makeText(loginActivity.this, ""+CurrentUsers.currentOnlineUser.getEmail(), Toast.LENGTH_SHORT).show();
                             loadingBar.dismiss();
                             refreshToken(temp);
                             Toast.makeText(loginActivity.this, "Sikeres bejelentkezés!", Toast.LENGTH_SHORT).show();
