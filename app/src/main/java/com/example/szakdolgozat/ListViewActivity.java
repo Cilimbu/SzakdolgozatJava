@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -30,6 +31,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.w3c.dom.Text;
+
 import java.sql.Ref;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,7 +46,7 @@ public class ListViewActivity extends AppCompatActivity {
     UserListDetails ListDetails;
     Button addNewListItem, delListItems;
     private String inputText;
-    TextView textView1,textView2;
+    TextView textView1,textView2, doneCheck;
     final ArrayList<ListItemDetails> arrayList = new ArrayList<>();
 
 
@@ -65,11 +68,11 @@ public class ListViewActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 ListItemDetails listItemDetails = (ListItemDetails) arrayAdapter.getItem(i);
+                final Integer newi = i;
 
-                toggleChecked(i);
-                RefreshList(arrayAdapter);
-                CheckBox checkBox = (CheckBox) view.findViewById(R.id.listitem_checkbox);
-                checkBox.setChecked(!checkBox.isChecked());
+                toggleChecked(newi);
+                //RefreshList(arrayAdapter);
+
             }
         });
 
@@ -163,19 +166,6 @@ public class ListViewActivity extends AppCompatActivity {
                     arrayList.add(temp);
                 }
                 listView.setAdapter(arrayAdapter);
-
-                for(int i=0; i<listView.getAdapter().getCount(); i++)
-                {
-                    View v = getViewByPosition(i,listView);
-                    CheckBox checkBox = (CheckBox) v.findViewById(R.id.listitem_checkbox);
-                    if(arrayList.get(i).getChecked().equals("1"))
-                    {
-                        checkBox.setChecked(true);
-                    }
-                    else {
-                        checkBox.setChecked(false);
-                    }
-                }
             }
 
 
@@ -191,7 +181,7 @@ public class ListViewActivity extends AppCompatActivity {
         final DatabaseReference RootRef;
         RootRef = FirebaseDatabase.getInstance().getReference();
         String ListItemID = RootRef.push().getKey();
-        String checked = "0";
+        String checked = "";
         HashMap<String, Object> userdataMap = new HashMap<>();
         userdataMap.put("ID", ListItemID);
         userdataMap.put("name", listitem);
@@ -230,7 +220,7 @@ public class ListViewActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String checked = snapshot.getValue(String.class);
                 Map<String, Object> map = new HashMap<>();
-                map.put("checked",(checked.equals("0") ? "1" : "0"));
+                map.put("checked",(checked.equals("") ? "Kész" : ""));
 
                 RootRef.child("Lists").child(ListDetails.getID()).child("listitems").child(arrayList.get(i).getID()).updateChildren(map);
 
@@ -241,16 +231,5 @@ public class ListViewActivity extends AppCompatActivity {
 
             }
         });
-    }
-    public View getViewByPosition(int position, ListView listView) {
-        final int firstListItemPosition = listView.getFirstVisiblePosition();
-        final int lastListItemPosition =firstListItemPosition + listView.getChildCount() - 1;
-
-        if (position < firstListItemPosition || position > lastListItemPosition ) {
-            return listView.getAdapter().getView(position, listView.getChildAt(position), listView);
-        } else {
-            final int childIndex = position - firstListItemPosition;
-            return listView.getChildAt(childIndex);
-        }
     }
 }

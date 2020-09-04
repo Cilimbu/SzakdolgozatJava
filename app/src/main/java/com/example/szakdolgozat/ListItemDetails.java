@@ -15,7 +15,7 @@ public class ListItemDetails implements Serializable{
     public String toString() {
         if(name!=null)
         {
-            return String.format(name);
+            return String.format(name+"   |   "+checked);
         }
         else
         {

@@ -10,14 +10,12 @@
         android:textSize="35sp"
         android:id="@+id/textt">
     </TextView>
-    <CheckBox
-        android:id="@+id/listitem_checkbox"
-        android:layout_alignParentEnd="true"
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:focusable="false"
-        android:clickable="false">
-
-    </CheckBox>
+        android:textSize="35sp"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/done_check">
+    </TextView>
 
 </RelativeLayout>

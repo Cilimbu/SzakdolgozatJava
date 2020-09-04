@@ -156,7 +156,7 @@ public class MySharedListsActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                    Toast.makeText(MySharedListsActivity.this, "Sikeres lista létrehozás!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MySharedListsActivity.this, "Sikeres megosztás!", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(MySharedListsActivity.this, "Hiba lépett fel a lista létrehozása közben, próbálja meg később", Toast.LENGTH_SHORT).show();
                 }

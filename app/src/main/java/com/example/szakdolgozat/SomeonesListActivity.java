@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -17,50 +19,89 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SomeonesListActivity extends AppCompatActivity {
 
     ListView listView;
     TextView textView1, textView2, textView3;
     UserListDetails ListDetails;
+    ListItemDetails listItemDetails;
+    final ArrayList<ListItemDetails> arrayList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_someones_list);
         ListDetails = (UserListDetails)getIntent().getSerializableExtra("ListDetails");
+        listItemDetails = new ListItemDetails();
+        final ArrayAdapter arrayAdapter = new ArrayAdapter<ListItemDetails>(this, R.layout.list_items_checkbox, R.id.textt, arrayList);
         listView = (ListView) findViewById(R.id.someonelist_list_view);
         textView1 = (TextView) findViewById(R.id.nametextView);
         textView2 = (TextView) findViewById(R.id.emailtextView);
         textView3 = (TextView) findViewById(R.id.datetextView);
-        RefreshList();
+        RefreshList(arrayAdapter);
         textView1.setText(ListDetails.getName());
         textView2.setText(ListDetails.getEmail());
         textView3.setText(ListDetails.getDate());
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                ListItemDetails listItemDetails = (ListItemDetails) arrayAdapter.getItem(i);
+                toggleChecked(i);
+            }
+        });
     }
 
-    public void RefreshList() {
+    public void RefreshList(final ArrayAdapter<ListItemDetails> arrayAdapter) {
         DatabaseReference reference;
-        reference = FirebaseDatabase.getInstance().getReference().child("Lists");
-        final ArrayList<String> arrayList = new ArrayList<>();
-        final ArrayAdapter arrayAdapter = new ArrayAdapter<String>(this, R.layout.list_items, R.id.textt, arrayList);
-        reference.orderByChild("ID").equalTo(ListDetails.getID()).addValueEventListener(new ValueEventListener() {
+        reference=FirebaseDatabase.getInstance().getReference().child("Lists");
+        reference.child(ListDetails.getID()).child("listitems").orderByChild("name").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot ds : snapshot.getChildren()) {
-                    String listitems = ds.child("listitems").getValue(String.class);
-                    if (!(listitems.length() == 0)) {
-                        for (String item : listitems.split(",")) {
-                            arrayList.add(item);
-                        }
-                    }
-                    listView.setAdapter(arrayAdapter);
+                arrayList.clear();
+                for(DataSnapshot ds : snapshot.getChildren())
+                {
+                    ListItemDetails temp = new ListItemDetails();
+                    String name = ds.child("name").getValue(String.class);
+                    temp.setName(name);
+                    String ID = ds.child("ID").getValue(String.class);
+                    temp.setID(ID);
+                    String checked = ds.child("checked").getValue(String.class);
+                    temp.setChecked(checked);
+                    arrayList.add(temp);
                 }
+                listView.setAdapter(arrayAdapter);
+            }
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+    public void toggleChecked(final Integer i)
+    {
+        final DatabaseReference RootRef;
+        RootRef = FirebaseDatabase.getInstance().getReference();
+
+        RootRef.child("Lists").child(ListDetails.getID()).child("listitems").child(arrayList.get(i).getID()).child("checked").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String checked = snapshot.getValue(String.class);
+                Map<String, Object> map = new HashMap<>();
+                map.put("checked",(checked.equals("") ? "Kész" : ""));
+
+                RootRef.child("Lists").child(ListDetails.getID()).child("listitems").child(arrayList.get(i).getID()).updateChildren(map);
+
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(SomeonesListActivity.this, "Hiba lépett fel a művelet során! Próbálja újra később!", Toast.LENGTH_SHORT).show();
+
             }
         });
     }

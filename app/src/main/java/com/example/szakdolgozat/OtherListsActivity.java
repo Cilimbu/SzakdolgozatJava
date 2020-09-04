@@ -62,7 +62,6 @@ public class OtherListsActivity extends AppCompatActivity {
                     String name = ds.child("name").getValue(String.class);
                     String ID = ds.child("ID").getValue(String.class);
                     final String email = ds.child("email").getValue(String.class);
-                    final String listitems = ds.child("listitems").getValue(String.class);
                     String date = ds.child("date").getValue(String.class);
                     String shared = ds.child("shared").getValue(String.class);
                     final UserListDetails listDetails = new UserListDetails(ID, email, name, shared, date);
