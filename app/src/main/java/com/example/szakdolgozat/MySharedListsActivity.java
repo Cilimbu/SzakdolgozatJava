@@ -59,7 +59,7 @@ public class MySharedListsActivity extends AppCompatActivity {
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int j) {
-                        inputText = input.getText().toString();
+                        inputText = input.getText().toString().toLowerCase();
                         if(!(inputText.equals(CurrentUsers.currentOnlineUser.getEmail())))
                         {
                             inputText=inputText.replace(".",",");

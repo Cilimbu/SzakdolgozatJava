@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.lifecycle.Lifecycle;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -30,6 +31,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.sql.Time;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -41,7 +45,8 @@ public class PrivateChatViewActivity extends AppCompatActivity {
     private TextView chat_conversation, roomname;
     private PrivateChatDetails privateChatDetails;
     private DatabaseReference rootRef;
-    private String chat_message,sender;
+    private String chat_message,sender,date;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +61,7 @@ public class PrivateChatViewActivity extends AppCompatActivity {
         roomname.setText(privateChatDetails.toString());
 
 
+
         rootRef = FirebaseDatabase.getInstance().getReference().child("PrivateChat").child(privateChatDetails.getRoomID()).child("Messages");
 
         sendMessageButton.setOnClickListener(new View.OnClickListener() {
@@ -65,31 +71,36 @@ public class PrivateChatViewActivity extends AppCompatActivity {
                 String temp_key = rootRef.push().getKey();
                 rootRef.updateChildren(map);
 
+                String currentDate = java.text.DateFormat.getDateTimeInstance().format(new Date());
+
                 DatabaseReference message_root = rootRef.child(temp_key);
                 Map<String,Object> map2 = new HashMap<String,Object>();
                 map2.put("sender", CurrentUsers.currentOnlineUser.getEmail());
                 map2.put("message", input_message.getText().toString());
+                map2.put("time", currentDate);
                 message_root.updateChildren(map2);
 
-
-
                 input_message.getText().clear();
+
             }
         });
+
+
         rootRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 append_chat(snapshot);
-                if (!sender.equals(CurrentUsers.currentOnlineUser.getEmail()))
+                if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED) &&
+                        snapshot.child("time").getValue().toString().equals(java.text.DateFormat.getDateTimeInstance().format(new Date())))
                 {
                     sendNotification(sender,chat_message);
                 }
-
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 append_chat(snapshot);
+
             }
 
             @Override
@@ -115,7 +126,8 @@ public class PrivateChatViewActivity extends AppCompatActivity {
         while (i.hasNext())
         {
             chat_message = (String) ((DataSnapshot)i.next()).getValue();
-            sender = (String) (((DataSnapshot) i.next()).getValue());
+            sender = (String) ((DataSnapshot) i.next()).getValue();
+            date = (String) ((DataSnapshot) i.next()).getValue();
 
             if(sender.equals(CurrentUsers.currentOnlineUser.getEmail()))
             {
@@ -134,19 +146,19 @@ public class PrivateChatViewActivity extends AppCompatActivity {
         if(privateChatDetails.getpartner().equals(CurrentUsers.currentOnlineUser.getEmail()))
         {
             email = privateChatDetails.getcreator();
+            email = email.replace(".",",");
         }
         else{
             email = privateChatDetails.getpartner();
+            email = email.replace(".",",");
         }
-        rootRef.child("Users").orderByChild("email").equalTo(email).addListenerForSingleValueEvent(new ValueEventListener() {
+        rootRef.child("Users").child(email).child("token").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for(DataSnapshot ds : snapshot.getChildren())
-                {
-                    String token = ds.child("token").getValue(String.class);
+                    String token = snapshot.getValue(String.class);
                     NotificationHelper.sendNotification(PrivateChatViewActivity.this, token, sender, message);
                     Log.i("asd", token);
-                }
+
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {

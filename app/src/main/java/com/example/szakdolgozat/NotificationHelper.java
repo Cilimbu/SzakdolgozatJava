@@ -46,14 +46,17 @@ public class NotificationHelper {
 
     public static void displayNotification(Context context, String title, String body)
     {
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, NotificationHelper.CHANNEL_ID)
-                .setSmallIcon(R.drawable.cart)
-                .setContentTitle(title)
-                .setContentText(body)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        if(!(context instanceof PrivateChatViewActivity))
+        {
+            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, NotificationHelper.CHANNEL_ID)
+                    .setSmallIcon(R.drawable.cart)
+                    .setContentTitle(title)
+                    .setContentText(body)
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-        NotificationManagerCompat mNotificationManager = NotificationManagerCompat.from(context);
-        mNotificationManager.notify(1,mBuilder.build());
+            NotificationManagerCompat mNotificationManager = NotificationManagerCompat.from(context);
+            mNotificationManager.notify(1,mBuilder.build());
+        }
 
     }
 

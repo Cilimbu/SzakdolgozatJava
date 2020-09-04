@@ -19,6 +19,6 @@ public class LoggedInActivity extends AppCompatActivity {
                 Intent intent = new Intent(LoggedInActivity.this, HomeActivity.class);
                 startActivity(intent);
             }
-        }, 3000);
+        }, 1500);
     }
 }
