@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,6 +52,7 @@ public class ProfileActivity extends AppCompatActivity {
         String temp = CurrentUsers.currentOnlineUser.getEmail();
         String email = temp.replace(",",".");
         emailTextView.setText(email);
+
 
 
         passwordResetButton.setOnClickListener(new View.OnClickListener() {
@@ -106,4 +108,5 @@ public class ProfileActivity extends AppCompatActivity {
         });
         builder.show();
     }
+
 }
