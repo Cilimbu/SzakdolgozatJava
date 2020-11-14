@@ -56,7 +56,6 @@ public class OtherListsActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 arrayList.clear();
-
                 for (DataSnapshot ds : snapshot.getChildren())
                 {
                     String name = ds.child("name").getValue(String.class);
@@ -70,7 +69,7 @@ public class OtherListsActivity extends AppCompatActivity {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 for (DataSnapshot datas : snapshot.getChildren()) {
-                                    if (datas.child("listID").getValue().equals(listDetails.getID())) {
+                                    if (datas.child("listID").getValue().equals(listDetails.getID()) && !(arrayList.contains(listDetails))) {
                                         arrayList.add(listDetails);
                                     }
                                 }
@@ -84,7 +83,6 @@ public class OtherListsActivity extends AppCompatActivity {
                         });
                     }
                 }
-
             }
 
             @Override

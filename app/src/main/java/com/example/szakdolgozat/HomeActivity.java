@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.example.szakdolgozat.CurrentOnline.CurrentUsers;
 import com.google.firebase.auth.FirebaseAuth;
@@ -21,6 +22,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private ImageButton myListBtn, privateChatBtn, groupChatBtn, sharedListBtn, logOutBtn, otherListBtn, profileBtn;
     private FirebaseAuth firebaseAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +36,7 @@ public class HomeActivity extends AppCompatActivity {
         otherListBtn = (ImageButton) findViewById(R.id.home_other_ibtn);
         profileBtn = (ImageButton) findViewById(R.id.home_profile_ibtn);
         firebaseAuth = FirebaseAuth.getInstance();
+
 
         myListBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,5 +89,9 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+    @Override
+    public void onBackPressed() {
+        moveTaskToBack(true);
     }
 }

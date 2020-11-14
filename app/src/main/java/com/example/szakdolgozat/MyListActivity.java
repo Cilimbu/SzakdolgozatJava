@@ -265,7 +265,7 @@ public class MyListActivity extends AppCompatActivity {
                     }
 
                 } else {
-                    Toast.makeText(MyListActivity.this, "Hiba lépett fel a lista létrehozása közben, próbálja meg később", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MyListActivity.this, "Hiba lépett fel a lista megosztása közben, próbálja meg később", Toast.LENGTH_SHORT).show();
                 }
             }
 

@@ -39,6 +39,9 @@ public class ForgotPassActivity extends AppCompatActivity {
                         {
                             Toast.makeText(ForgotPassActivity.this, "Jelszó elküldve a megadott email címre", Toast.LENGTH_SHORT).show();
                         }
+                        else {
+                            Toast.makeText(ForgotPassActivity.this, "Az emailt nem lehetett elküldeni", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
             }

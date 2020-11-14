@@ -114,7 +114,6 @@ public class MainActivity extends AppCompatActivity
                         }
                     });
                     CurrentUsers.currentOnlineUser.setEmail(email);
-                    Toast.makeText(MainActivity.this, ""+CurrentUsers.currentOnlineUser.getEmail(), Toast.LENGTH_SHORT).show();
                     loadingBar.dismiss();
                     refreshToken(temp);
                     Toast.makeText(MainActivity.this, "Sikeres bejelentkezés!", Toast.LENGTH_SHORT).show();
@@ -135,7 +134,6 @@ public class MainActivity extends AppCompatActivity
                 if(task.isSuccessful())
                 {
                     String token = task.getResult().getToken();
-                    Log.i("asdasdasdasda",token);
                     Map<String, Object> map = new HashMap<>();
                     map.put("token", token);
                     rootRef.child("Users").child(email).updateChildren(map);
