@@ -137,11 +137,14 @@ public class MySharedListsActivity extends AppCompatActivity {
                 {
                     ConnectionExists(inputText, ListObj.get(position).getID());
                 }
+                else{
+                    Toast.makeText(MySharedListsActivity.this, "Ez a felhasználó nem létezik", Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(MySharedListsActivity.this, "Ez a felhasználó nem létezik", Toast.LENGTH_SHORT).show();
+
             }
         });
     }
